@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Interativa: Personalização no Duolingo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Duolingo Calm -->
+    <!-- Application Structure Plan: Uma aplicação de página única com rolagem vertical e uma barra de navegação superior fixa para rolagem suave entre seções temáticas (Introdução, Indicadores, Objetivos, Estratégias, Coleta de Dados, Impacto). Este fluxo linear e guiado é ideal para explicar uma estratégia de negócios passo a passo, tornando-a mais digerível que uma apresentação estática. Elementos interativos como cartões com efeito de hover e um gráfico de radar dinâmico são usados para engajar o usuário e revelar informações sob demanda, promovendo a exploração sem sobrecarregá-lo. -->
+    <!-- Visualization & Content Choices: 
+        - Indicadores: O relatório lista indicadores -> Objetivo: Informar -> Visualização: Cartões interativos em HTML com efeitos de hover -> Interação: Hover para ver detalhes -> Justificativa: Mais envolvente que uma lista estática.
+        - Objetivos: O relatório lista metas SMART -> Objetivo: Comparar/Organizar -> Visualização: Gráfico de radar (Chart.js/Canvas) -> Interação: Clicar em um ponto para ler a descrição da meta -> Justificativa: Conecta visualmente múltiplas metas e fornece busca interativa de detalhes.
+        - Estratégias: O relatório descreve Clustering/Recomendação -> Objetivo: Organizar/Explicar Processo -> Visualização: Diagramas estilo fluxograma usando divs HTML/Tailwind -> Interação: Visual estático -> Justificativa: Representa visualmente o fluxo de dados e lógica de forma mais eficaz que o texto.
+        - Impacto: O relatório lista resultados positivos -> Objetivo: Informar/Resumir -> Visualização: Cartões estilo KPI com ícones (Unicode) e texto em negrito -> Interação: Visual estático -> Justificativa: Fornece um resumo forte, escaneável e conclusivo dos benefícios. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7F5F2;
+            color: #3f3c3a;
+        }
+        .chart-container {
+            position: relative;
+            height: 40vh;
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #58cc02;
+        }
+        .nav-link.active {
+            color: #58cc02;
+            border-bottom-color: #58cc02;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-gray-800">Duolingo Insights</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#intro" class="nav-link text-gray-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Início</a>
+                        <a href="#indicators" class="nav-link text-gray-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Indicadores</a>
+                        <a href="#objectives" class="nav-link text-gray-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Objetivos</a>
+                        <a href="#strategies" class="nav-link text-gray-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Estratégias</a>
+                        <a href="#impact" class="nav-link text-gray-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Impacto</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="intro" class="py-20 md:py-28">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-gray-900">Personalização é a Chave</h1>
+                <p class="mt-4 md:mt-6 max-w-2xl mx-auto text-lg md:text-xl text-gray-600">Uma análise interativa de como o Duolingo utiliza dados para criar campanhas de marketing digital eficazes, otimizando o engajamento e a retenção de milhões de usuários em todo o mundo.</p>
+            </div>
+        </section>
+
+        <section id="indicators" class="py-16 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">Indicadores-Chave para Segmentação</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">Para personalizar, o Duolingo primeiro precisa entender. Esta seção explora os principais tipos de dados que a empresa analisa para identificar padrões de comportamento e agrupar seus usuários de forma inteligente.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-gray-50 rounded-lg p-6 shadow-sm transition-transform hover:scale-105">
+                        <h3 class="text-xl font-semibold text-gray-800">Idioma e Proficiência</h3>
+                        <p class="mt-2 text-gray-600">Analisa qual idioma o usuário estuda e seu nível (iniciante, avançado), permitindo ofertas de conteúdo direcionado.</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-6 shadow-sm transition-transform hover:scale-105">
+                        <h3 class="text-xl font-semibold text-gray-800">Frequência de Uso</h3>
+                        <p class="mt-2 text-gray-600">Mede a regularidade e duração das sessões para identificar usuários engajados ou em risco de abandono.</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-6 shadow-sm transition-transform hover:scale-105">
+                        <h3 class="text-xl font-semibold text-gray-800">Interação com Campanhas</h3>
+                        <p class="mt-2 text-gray-600">Monitora cliques e aberturas de e-mails/notificações para avaliar a relevância da comunicação.</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-6 shadow-sm transition-transform hover:scale-105">
+                        <h3 class="text-xl font-semibold text-gray-800">Comportamento no App</h3>
+                        <p class="mt-2 text-gray-600">Observa os recursos utilizados (lições, histórias) e o progresso para entender as preferências de aprendizado.</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-6 shadow-sm transition-transform hover:scale-105">
+                        <h3 class="text-xl font-semibold text-gray-800">Histórico de Compras</h3>
+                        <p class="mt-2 text-gray-600">Identifica assinantes do Duolingo Plus para campanhas de fidelidade ou de novos recursos premium.</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-6 shadow-sm transition-transform hover:scale-105">
+                        <h3 class="text-xl font-semibold text-gray-800">Coleta de Feedback</h3>
+                        <p class="mt-2 text-gray-600">Utiliza pesquisas rápidas e contextuais para coletar dados qualitativos sobre as necessidades do usuário.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="objectives" class="py-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">Objetivos Mensuráveis das Campanhas</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">Toda estratégia precisa de metas claras. O Duolingo foca em objetivos SMART (Específicos, Mensuráveis, Atingíveis, Relevantes e Temporais) que direcionam suas ações de marketing. Clique nos pontos do gráfico para explorar cada objetivo.</p>
+                </div>
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="w-full md:w-1/2">
+                        <div class="chart-container">
+                            <canvas id="objectivesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <div id="objective-details" class="bg-white p-6 rounded-lg shadow-md min-h-[200px]">
+                            <h3 id="objective-title" class="text-2xl font-bold text-gray-800">Selecione um Objetivo</h3>
+                            <p id="objective-description" class="mt-2 text-gray-600">Passe o mouse ou clique em um ponto no gráfico para ver os detalhes da meta correspondente e como ela contribui para o crescimento do Duolingo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="strategies" class="py-16 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">Estratégias de Segmentação</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">Com os dados coletados e os objetivos definidos, o Duolingo aplica duas estratégias principais para entregar conteúdo personalizado: Clustering e Sistemas de Recomendação. Esta seção visualiza como esses sistemas funcionam.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                    <div class="p-6 border rounded-lg">
+                        <h3 class="text-2xl font-semibold text-center text-gray-800 mb-6">Clustering (Agrupamento)</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-center">
+                                <div class="bg-green-100 text-green-800 p-3 rounded-lg shadow">Dados do Usuário</div>
+                            </div>
+                            <div class="flex justify-center text-3xl text-gray-400">↓</div>
+                            <div class="flex items-center justify-center">
+                                 <div class="bg-blue-100 text-blue-800 p-3 rounded-lg shadow">Análise de Comportamento</div>
+                            </div>
+                            <div class="flex justify-center text-3xl text-gray-400">↓</div>
+                            <div class="grid grid-cols-2 gap-4 text-center">
+                                <div class="bg-yellow-100 text-yellow-800 p-2 rounded-lg shadow">"Estudantes Diários"</div>
+                                <div class="bg-yellow-100 text-yellow-800 p-2 rounded-lg shadow">"Risco de Abandono"</div>
+                                <div class="bg-yellow-100 text-yellow-800 p-2 rounded-lg shadow">"Focados em Vocabulário"</div>
+                                <div class="bg-yellow-100 text-yellow-800 p-2 rounded-lg shadow">"Super Usuários"</div>
+                            </div>
+                            <p class="text-center text-gray-600 pt-4">Cria grupos de usuários com características semelhantes para campanhas em massa personalizadas.</p>
+                        </div>
+                    </div>
+                    <div class="p-6 border rounded-lg">
+                        <h3 class="text-2xl font-semibold text-center text-gray-800 mb-6">Sistemas de Recomendação</h3>
+                         <div class="space-y-4">
+                            <div class="flex items-center justify-center">
+                                <div class="bg-green-100 text-green-800 p-3 rounded-lg shadow">Perfil Individual</div>
+                            </div>
+                            <div class="flex justify-center text-3xl text-gray-400">↓</div>
+                            <div class="flex items-center justify-center">
+                                 <div class="bg-purple-100 text-purple-800 p-3 rounded-lg shadow">Motor de Recomendação</div>
+                            </div>
+                             <div class="flex justify-center text-3xl text-gray-400">↓</div>
+                            <div class="grid grid-cols-1 gap-4 text-center">
+                                <div class="bg-red-100 text-red-800 p-2 rounded-lg shadow">Sugestão de Lição</div>
+                                <div class="bg-red-100 text-red-800 p-2 rounded-lg shadow">Oferta do Duolingo Plus</div>
+                                <div class="bg-red-100 text-red-800 p-2 rounded-lg shadow">Indicação de Novo Idioma</div>
+                            </div>
+                             <p class="text-center text-gray-600 pt-4">Oferece conteúdo e ofertas hiper-personalizadas com base no perfil único de cada usuário.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="impact" class="py-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">O Impacto da Personalização</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">A aplicação consistente dessas estratégias gera resultados significativos para o Duolingo, fortalecendo a plataforma e melhorando a experiência do usuário. Abaixo estão os principais benefícios observados.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-4xl mb-4">📢</div>
+                        <h3 class="text-xl font-semibold text-gray-800">Campanhas Relevantes</h3>
+                        <p class="mt-2 text-gray-600">Conteúdo direcionado que ressoa com as necessidades e interesses de cada segmento de usuário.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-4xl mb-4">📈</div>
+                        <h3 class="text-xl font-semibold text-gray-800">Engajamento Otimizado</h3>
+                        <p class="mt-2 text-gray-600">Mantém os usuários motivados e ativos na plataforma por mais tempo.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-4xl mb-4">❤️</div>
+                        <h3 class="text-xl font-semibold text-gray-800">Retenção Aumentada</h3>
+                        <p class="mt-2 text-gray-600">Reduz a taxa de abandono ao incentivar a continuidade do aprendizado de forma proativa.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-4xl mb-4">🚀</div>
+                        <h3 class="text-xl font-semibold text-gray-800">Crescimento Eficiente</h3>
+                        <p class="mt-2 text-gray-600">Impulsiona a adoção de recursos premium e a aquisição de novos usuários de forma sustentável.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>Análise interativa criada com base em dados públicos e estratégias de mercado.</p>
+            <p class="mt-1">&copy; 2024 Duolingo Insights. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const chartData = {
+                labels: [
+                    'Redução de Churn',
+                    'Aumento da Conversão',
+                    'Otimização do Engajamento',
+                    'Aumento da Retenção',
+                    'Aumento da Taxa de Abertura'
+                ],
+                datasets: [{
+                    label: 'Foco da Estratégia',
+                    data: [8, 9, 7, 8, 6],
+                    fill: true,
+                    backgroundColor: 'rgba(88, 204, 2, 0.2)',
+                    borderColor: 'rgb(88, 204, 2)',
+                    pointBackgroundColor: 'rgb(88, 204, 2)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(88, 204, 2)'
+                }]
+            };
+
+            const chartDetails = [
+                { title: '🎯 Redução do Abandono (Churn)', description: 'Manter os usuários, especialmente os novos, engajados nos primeiros 30 dias é crucial. Campanhas de boas-vindas e lembretes de progresso são estratégias chave aqui.' },
+                { title: '🎯 Aumento da Conversão', description: 'Converter usuários gratuitos em assinantes do Duolingo Plus. As campanhas destacam recursos premium para os segmentos com maior probabilidade de conversão.' },
+                { title: '🎯 Otimização do Engajamento', description: 'Incentivar o uso de novos recursos, como histórias e podcasts. As campanhas promovem essas funcionalidades para usuários avançados ou que buscam variedade.' },
+                { title: '🎯 Aumento da Retenção', description: 'Incentivar usuários que completaram um curso a iniciar um novo idioma, mantendo-os no ecossistema Duolingo por mais tempo.' },
+                { title: '🎯 Aumento da Taxa de Abertura', description: 'Melhorar a relevância de e-mails e notificações para garantir que a comunicação seja lida, enviando conteúdo útil e no momento certo.' }
+            ];
+
+            const ctx = document.getElementById('objectivesChart').getContext('2d');
+            const objectivesChart = new Chart(ctx, {
+                type: 'radar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: {
+                        line: {
+                            borderWidth: 3
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0,0, 0.1)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12
+                                },
+                                color: '#3f3c3a'
+                            },
+                            ticks: {
+                                backdropColor: 'transparent',
+                                display: false
+                            },
+                             suggestedMin: 0,
+                             suggestedMax: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const activePoint = elements[0];
+                            const dataIndex = activePoint.index;
+                            updateDetails(dataIndex);
+                        }
+                    },
+                    onHover: (event, chartElement) => {
+                         event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                         if (chartElement.length > 0) {
+                            const dataIndex = chartElement[0].index;
+                            updateDetails(dataIndex);
+                        }
+                    }
+                }
+            });
+
+            const titleEl = document.getElementById('objective-title');
+            const descriptionEl = document.getElementById('objective-description');
+            
+            function updateDetails(index) {
+                const detail = chartDetails[index];
+                titleEl.textContent = detail.title;
+                descriptionEl.textContent = detail.description;
+            }
+
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 70) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
